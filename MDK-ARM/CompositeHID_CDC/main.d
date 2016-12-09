@@ -50,3 +50,5 @@
 .\compositehid_cdc\main.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h
 .\compositehid_cdc\main.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h
 .\compositehid_cdc\main.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h
+.\compositehid_cdc\main.o: ../Inc/usbd_cdc_if.h
+.\compositehid_cdc\main.o: ..\Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Inc\usbd_cdc.h

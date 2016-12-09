@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    usbd_cdc_hid.h
   * @author  Oleksandr Lisovyi
-  * @version V0.0.1
-  * @date    05-November-2016
+  * @version V1.0
+  * @date    09-December-2016
   * @brief   header file for the usbd_cdc_hid.c file.
   ******************************************************************************
   */ 
@@ -17,7 +17,7 @@
 #include "usbd_customhid.h"
 #include "usbd_cdc.h"
 
-#define USB_CDC_HID_CONFIG_DESC_SIZ 	0x6B//0x29 //0x6B   //107
+#define USB_CDC_HID_CONFIG_DESC_SIZ 	0x6B
 #define HID_INTERFACE 					0x00
 #define CDC_INTERFACE0 					0x01
 #define CDC_INTERFACE1 					0x02

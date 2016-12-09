@@ -39,17 +39,24 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
+/*For using CDC and CustomHID class functions*/
 #include "usbd_customhid.h"
+#include "usbd_cdc_if.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+
+/*USBHID functions and variables declaration*/
 extern USBD_HandleTypeDef hUsbDeviceFS;
 uint8_t dataToSend[8];
 uint8_t btnPressed = 0;
 uint8_t cnt = 0;
+
+/*CDC buffers declaration*/
+char str_rx[21], str[21];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -62,7 +69,12 @@ void Error_Handler(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-
+void clearStr(char *buf){
+	int i;
+	for(i = 0; i<21; i++){
+		buf[i]=0;
+	}
+}
 /* USER CODE END 0 */
 
 int main(void)
@@ -97,14 +109,27 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	uint8_t btn = (uint8_t)HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_8);
-		if(btnPressed != btn){
-			dataToSend[0] = 3;
-			dataToSend[1] = btn;
-			btnPressed = btn;
-			USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, dataToSend, 8);
+		/*CDC echo. Return received buffer back to computer.*/
+		if(strlen(str_rx)!=0){
+			int i;
+			for(i=0;i<21;i++)
+				str[i]=str_rx[i];
+			clearStr(str_rx);
+			str[strlen(str)]='\r';
+			str[strlen(str)]='\n';
+			CDC_Transmit_FS((uint8_t*)str, strlen(str));
 		}
-		HAL_Delay(10);
+		/*Custom HID. Example for my test board.(When button is pressed, LED on PC is on). 
+		* USBD HID Demonstrator is used on PC
+		**/
+		uint8_t btn = (uint8_t)HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_8);
+			if(btnPressed != btn){
+				dataToSend[0] = 3;
+				dataToSend[1] = btn;
+				btnPressed = btn;
+				USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, dataToSend, 8);
+			}
+			HAL_Delay(10);
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
@@ -162,6 +187,7 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim6){
+	/*Switch LEDs on PC side*/
 	if(cnt == 0){
 		dataToSend[0] = 6;
 		dataToSend[1] = 1;
@@ -175,6 +201,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim6){
 		dataToSend[0] = 5;
 		dataToSend[1] = 0;
 	}
+	/*Send messade*/
 	dataToSend[2] = 'H';
 	dataToSend[3] = 'I';
 	dataToSend[4] = 'D';

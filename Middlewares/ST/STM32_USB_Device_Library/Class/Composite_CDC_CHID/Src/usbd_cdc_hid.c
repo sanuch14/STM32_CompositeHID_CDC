@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    usbd_cdc_hid.c
   * @author  Oleksandr Lisovyi
-  * @version V0.0.1
-  * @date    05-November-2016
+  * @version V1.0
+  * @date    09-December-2016
   * @verbatim
   *      
   *          ===================================================================      
@@ -64,17 +64,11 @@ static uint8_t USBD_CDC_HID_EP0_RxReady (USBD_HandleTypeDef *pdev);
 static uint8_t *USBD_CDC_HID_GetCfgDesc (uint16_t *length);
 static uint8_t *USBD_CDC_HID_GetDeviceQualifierDesc (uint16_t *length);
 
-//  (USB_MSC_CONFIG_DESC_SIZ -9 + USB_CDC_CONFIG_DESC_SIZ  + 8)
-
-
-
 USBD_CDC_HID_ItfTypeDef CDC_HID = 
 {
 	&USBD_CustomHID_fops_FS,
 	&USBD_Interface_fops_FS,
 };
-
-
 
 /* CDC_HID interface class callbacks structure */
 USBD_ClassTypeDef  USBD_CDC_HID = 
@@ -95,7 +89,6 @@ USBD_ClassTypeDef  USBD_CDC_HID =
 	USBD_CDC_HID_GetDeviceQualifierDesc,
 };
 
-
 /* USB CDC_HID device Configuration Descriptor */
 __ALIGN_BEGIN static uint8_t USBD_CDC_HID_CfgDesc[USB_CDC_HID_CONFIG_DESC_SIZ] __ALIGN_END =
 {
@@ -111,25 +104,6 @@ __ALIGN_BEGIN static uint8_t USBD_CDC_HID_CfgDesc[USB_CDC_HID_CONFIG_DESC_SIZ] _
 	0xC0,         /*bmAttributes: bus powered */
 	0x32,         /*MaxPower 100 mA: this current is used for detecting Vbus*/
 	/*9*/
-	
-	
-	
-	///////////////////////////////////////////////////////////////////////////////////////////////
-    // IAD      Digitizer
-     //  0x08,	// bLength: Interface Descriptor size
-     //  0x0B,	// bDescriptorType: IAD
-     //  0x00,	// bFirstInterface                    //starts from zero .. hence 0-1- and now 2
-     //  0x01,	// bInterfaceCount                    //no of interfaces used in function. for above cdc it was 2
-     //  0x00,   //*bInterfaceClass: HID*/
-    //   0x00,   //*bInterfaceSubClass : 1=BOOT, 0=no boot*/
-     //  0x00,   //*nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse*/
-     //  0x02,   //*iInterface: Index of string descriptor*/
-    ////////////////////////////////////////////////////////////////////////////////////////////////
- 
-	
-	
-	
-	
 	
 	/************** Descriptor of CUSTOM HID interface ****************/
 	0x09,         /*bLength: Interface Descriptor size*/
@@ -173,7 +147,6 @@ __ALIGN_BEGIN static uint8_t USBD_CDC_HID_CfgDesc[USB_CDC_HID_CONFIG_DESC_SIZ] _
 	0x00,
 	0x01,	/* bInterval: Polling Interval (20 ms) *//////////0x20/////////////////////////////////////////////////////////
 	/*41*/
-	
 	
 	/******** /IAD should be positioned just before the CDC interfaces ******
                 IAD to associate the two CDC interfaces */
@@ -319,9 +292,9 @@ static uint8_t USBD_CDC_HID_Init (USBD_HandleTypeDef *pdev, uint8_t cfgidx)
   */
 static uint8_t USBD_CDC_HID_DeInit (USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 {
-	/* HID initialization */
+	/* HID deinitialization */
 	USBD_CUSTOM_HID_DeInit(pdev, cfgidx);
-	/* CDC initialization */
+	/* CDC deinitialization */
 	USBD_CDC_DeInit(pdev, cfgidx);
 	
 	return USBD_OK;
@@ -383,7 +356,6 @@ static uint8_t USBD_CDC_HID_DataOut (USBD_HandleTypeDef *pdev, uint8_t epnum)
 */
 static uint8_t USBD_CDC_HID_EP0_RxReady (USBD_HandleTypeDef *pdev)
 {
-	/**????**/
 	USBD_CUSTOM_HID_EP0_RxReady(pdev);
 	
 	USBD_CDC_EP0_RxReady(pdev);
@@ -414,7 +386,6 @@ static uint8_t *USBD_CDC_HID_GetDeviceQualifierDesc (uint16_t *length)
 	*length = sizeof (USBD_CDC_HID_DeviceQualifierDesc);
 	return USBD_CDC_HID_DeviceQualifierDesc;
 }
-
 
 
 /**
