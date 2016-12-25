@@ -42,21 +42,34 @@
 /*For using CDC and CustomHID class functions*/
 #include "usbd_customhid.h"
 #include "usbd_cdc_if.h"
+#include <stdio.h>
+#include "Handler.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+//blink LEDs var
+uint8_t rxLed=0,txLed=0;
 
 /*USBHID functions and variables declaration*/
 extern USBD_HandleTypeDef hUsbDeviceFS;
-uint8_t dataToSend[8];
+uint8_t dataToSend[32] = "xxxxxxxxx xxxxxxxxx xxxxxxxxx xx";
 uint8_t btnPressed = 0;
 uint8_t cnt = 0;
 
 /*CDC buffers declaration*/
-char str_rx[21], str[21];
+
+char uart_tx[BUF_SIZE];
+uint16_t countTx=0;
+uint8_t writePointerTx=0, readPointerTx=0;
+
+
+char uart_rx[BUF_SIZE]="\0";
+uint16_t countRx=0;
+uint8_t writePointerRx=0, readPointerRx=0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -71,7 +84,7 @@ void Error_Handler(void);
 /* USER CODE BEGIN 0 */
 void clearStr(char *buf){
 	int i;
-	for(i = 0; i<21; i++){
+	for(i = 0; i<BUF_SIZE; i++){
 		buf[i]=0;
 	}
 }
@@ -81,7 +94,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+	
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -102,34 +115,85 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
 	HAL_TIM_Base_Start_IT(&htim14);
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
+	
+	HAL_UART_Receive_IT(&huart1, (uint8_t*)uart_rx, BUF_SIZE);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		/*CDC echo. Return received buffer back to computer.*/
-		if(strlen(str_rx)!=0){
-			int i;
-			for(i=0;i<21;i++)
-				str[i]=str_rx[i];
-			clearStr(str_rx);
-			str[strlen(str)]='\r';
-			str[strlen(str)]='\n';
-			CDC_Transmit_FS((uint8_t*)str, strlen(str));
+		if(rxLed){
+			rxLed--;
+			if(rxLed==0)
+				TIM3->CCR4 = 0;
 		}
+		if(txLed){
+			txLed--;
+			if(txLed==0)
+				TIM3->CCR3 = 0;
+		}
+		char tmp[BUF_SIZE]="\0";
+		uint16_t cn = countRx;
+		if(cn>0){
+			rxLed=5;
+			TIM3->CCR4=65535;
+			for(int i=0;i<cn;i++){
+				tmp[i]=uart_rx[readPointerRx];
+				readPointerRx=(readPointerRx+1)%BUF_SIZE;
+				if(i==49){
+					CDC_Transmit_FS((uint8_t*)tmp, 50);
+					countRx-=50;
+					cn-=50;
+					//clearStr(tmp);
+					i=-1;
+				}
+			}
+			if(cn!=0){
+				CDC_Transmit_FS((uint8_t*)tmp, cn);
+				countRx-=cn;
+				//clearStr(tmp);
+			}
+		}
+		
+		/*CDC send received buffer to UART.*/
+		cn = countTx;
+		if(cn>0){
+			txLed=5;
+			TIM3->CCR3=65535;
+//			sprintf(tmp,"\ncountTX = %d\n",countTx);
+//			CDC_Transmit_FS((uint8_t*)tmp,strlen(tmp));
+			for(int i=0;i<cn;i++){
+				tmp[i]=uart_tx[readPointerTx];
+				readPointerTx=(readPointerTx+1)%BUF_SIZE;
+				if(i==31){
+					HAL_UART_Transmit(&huart1, (uint8_t*)tmp, 32,0xFF);
+					countTx-=32;
+					cn-=32;
+					//clearStr(tmp);
+					i=-1;
+				}
+			}
+			if(cn!=0){
+				countTx-=cn;
+				HAL_UART_Transmit(&huart1, (uint8_t*)tmp, cn,0xFF);
+				//clearStr(tmp);
+			}
+		}
+		
 		/*Custom HID. Example for my test board.(When button is pressed, LED on PC is on). 
 		* USBD HID Demonstrator is used on PC
 		**/
 		uint8_t btn = (uint8_t)HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_8);
 			if(btnPressed != btn){
-				dataToSend[0] = 3;
+				dataToSend[0] = 2;
 				dataToSend[1] = btn;
 				btnPressed = btn;
-				USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, dataToSend, 8);
+				USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, dataToSend, 32);
 			}
-			HAL_Delay(10);
+			HAL_Delay(1);
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
@@ -189,10 +253,10 @@ void SystemClock_Config(void)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim6){
 	/*Switch LEDs on PC side*/
 	if(cnt == 0){
-		dataToSend[0] = 6;
+		dataToSend[0] = 4;
 		dataToSend[1] = 1;
 	}else if(cnt == 1){
-		dataToSend[0] = 6;
+		dataToSend[0] = 4;
 		dataToSend[1] = 0;
 	}else if(cnt == 2){
 		dataToSend[0] = 5;
@@ -208,7 +272,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim6){
 	dataToSend[5] = 'U';
 	dataToSend[6] = 'S';
 	dataToSend[7] = 'B';
-	USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, dataToSend, 8);
+	USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, dataToSend, 32);
 	cnt++;
 	if (cnt>3)
 		cnt=0;

@@ -39,6 +39,8 @@
 ".\compositehid_cdc\usbd_cdc_if.o"
 ".\compositehid_cdc\usbd_desc.o"
 ".\compositehid_cdc\usbd_custom_hid_if.o"
+".\compositehid_cdc\handler.o"
+".\compositehid_cdc\fifo.o"
 --library_type=microlib --strict --scatter ".\CompositeHID_CDC\CompositeHID_CDC.sct"
 --diag_suppress=L6329 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

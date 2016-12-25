@@ -182,6 +182,9 @@
 
 /* Private macros ------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+/*uint8_t *putIndex, *getIndex, *isEmpty, *size;
+char *Buffer;
+*/
 /* Private function prototypes -----------------------------------------------*/
 /** @addtogroup UART_Private_Functions   UART Private Functions
   * @{
@@ -196,6 +199,15 @@ static void UART_DMAError(DMA_HandleTypeDef *hdma);
   */
 
 /* Exported functions --------------------------------------------------------*/
+
+/*void setFIFO(uint8_t *putInd, uint8_t *getInd, uint8_t *isEmp, uint8_t *siz, char *Buf){
+	putIndex=putInd;
+	getIndex=getInd;
+	isEmpty=isEmp;
+	size=siz;
+	Buffer=Buf;
+}
+*/
 
 /** @defgroup UART_Exported_Functions UART Exported Functions
   * @{
@@ -736,6 +748,7 @@ HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, u
   *         use of specific alignment compilation directives or pragmas might be required to ensure proper alignment for pData.
   * @retval HAL status
   */
+//HAL_StatusTypeDef HAL_UART_Receive(UART_HandleTypeDef *huart, FIFOBUF *pData, uint16_t Size, uint32_t Timeout)
 HAL_StatusTypeDef HAL_UART_Receive(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout)
 {
   uint16_t* tmp;
@@ -790,6 +803,7 @@ HAL_StatusTypeDef HAL_UART_Receive(UART_HandleTypeDef *huart, uint8_t *pData, ui
       else
       {
         *pData++ = (uint8_t)(huart->Instance->RDR & (uint8_t)uhMask);
+				//pData->putElement((uint8_t)(huart->Instance->RDR & (uint8_t)uhMask));
       }
     }
 
@@ -875,6 +889,7 @@ HAL_StatusTypeDef HAL_UART_Transmit_IT(UART_HandleTypeDef *huart, uint8_t *pData
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_UART_Receive_IT(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size)
+//HAL_StatusTypeDef HAL_UART_Receive_IT(UART_HandleTypeDef *huart, FIFOBUF *pData, uint16_t Size)
 {
   /* Check that a Rx process is not already ongoing */
   if(huart->RxState == HAL_UART_STATE_READY)
@@ -1094,6 +1109,7 @@ HAL_StatusTypeDef HAL_UART_Transmit_DMA(UART_HandleTypeDef *huart, uint8_t *pDat
   *         use of specific alignment compilation directives or pragmas might be required to ensure proper alignment for pData.
   * @retval HAL status
   */
+//HAL_StatusTypeDef HAL_UART_Receive_DMA(UART_HandleTypeDef *huart, FIFOBUF *pData, uint16_t Size)
 HAL_StatusTypeDef HAL_UART_Receive_DMA(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size)
 {
   uint32_t *tmp;
@@ -1989,7 +2005,7 @@ HAL_StatusTypeDef UART_Receive_IT(UART_HandleTypeDef *huart)
     }
 
     if(--huart->RxXferCount == 0)
-    {
+		{
       __HAL_UART_DISABLE_IT(huart, UART_IT_RXNE);
 
       /* Disable the UART Parity Error Interrupt */
@@ -2016,6 +2032,9 @@ HAL_StatusTypeDef UART_Receive_IT(UART_HandleTypeDef *huart)
     return HAL_BUSY;
   }
 }
+
+
+
 
 /**
   * @}

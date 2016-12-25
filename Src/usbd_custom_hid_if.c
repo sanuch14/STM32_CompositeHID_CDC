@@ -78,80 +78,48 @@
 __ALIGN_BEGIN static uint8_t CUSTOM_HID_ReportDesc_FS[USBD_CUSTOM_HID_REPORT_DESC_SIZE] __ALIGN_END =
 {
   /* USER CODE BEGIN 0 */ 
+	//from PC
   0x06,0x00,0xFF,   //USAGE_PAGE (GENERIC DESCTOP)
     0x09, 0x01,                    // USAGE (Vendor Usage 1)
     0xa1, 0x01,                    // COLLECTION (Application)
     0x85, 0x01,                    //   REPORT_ID (1)
     0x09, 0x01,                    //   USAGE (Vendor Usage 1)
     0x15, 0x00,                    //   LOGICAL_MINIMUM (0)
-    0x25, 0x01,                    //   LOGICAL_MAXIMUM (1)
+    0x25, 0xFF,                    //   LOGICAL_MAXIMUM (1)
     0x75, 0x08,                    //   REPORT_SIZE (8)
-    0x95, 0x01,                    //   REPORT_COUNT (1)
+    0x95, 0x1F,                    //   REPORT_COUNT (1)
     0xB1, 0x82,                    //   FEATURE (Data,Var,Abs,Vol)
     0x85, 0x01,                    //   REPORT_ID (1)
     0x09, 0x01,                    //   USAGE (Vendor Usage 1)
     0x91, 0x82,                    //   OUTPUT (Data,Var,Abs,Vol)
-
-/*    0x85, 0x02,                    //   REPORT_ID (2)
-    0x09, 0x02,                    //   USAGE (Vendor Usage 2)
-    0x15, 0x00,                    //   LOGICAL_MINIMUM (0)
-    0x25, 0x01,                    //   LOGICAL_MAXIMUM (1)
-    0x75, 0x08,                    //   REPORT_SIZE (8)
-    0x95, 0x01,                    //   REPORT_COUNT (1)
-    0xB1, 0x82,                    //   FEATURE (Data,Var,Abs,Vol)
-    0x85, 0x02,                    //   REPORT_ID (2)
-    0x09, 0x02,                    //   USAGE (Vendor Usage 2)
-    0x91, 0x82,                    //   OUTPUT (Data,Var,Abs,Vol)
-*/		
-		0x85, 0x04,                    //   REPORT_ID (4)
-    0x09, 0x04,                    //   USAGE (Vendor Usage 4)
+		
+		0x85, 0x03,                    //   REPORT_ID (3)
+    0x09, 0x03,                    //   USAGE (Vendor Usage 3)
     0x15, 0x00,                    //   LOGICAL_MINIMUM (0)
     0x25, 0xFF,                    //   LOGICAL_MAXIMUM (255)
     0x75, 0x08,                    //   REPORT_SIZE (8)
-    0x95, 0x01,                    //   REPORT_COUNT (1)
-    0xB1, 0x82,                    //   FEATURE (Data,Var,Abs,Vol)
-    0x85, 0x04,                    //   REPORT_ID (4)
-    0x09, 0x04,                    //   USAGE (Vendor Usage 4)
-    0x91, 0x82,                    //   OUTPUT (Data,Var,Abs,Vol)
-
-/*    0x85, 0x03,                    //   REPORT_ID (3)
-    0x09, 0x03,                    //   USAGE (Vendor Usage 3)
-    0x15, 0x00,                    //   LOGICAL_MINIMUM (0)
-    0x25, 0x01,			              //   LOGICAL_MAXIMUM (255)
-    0x75, 0x08,                    //   REPORT_SIZE (8)
-    0x95, 0x01,                    //   REPORT_COUNT (1)
+    0x95, 0x1F,                    //   REPORT_COUNT (32)
     0xB1, 0x82,                    //   FEATURE (Data,Var,Abs,Vol)
     0x85, 0x03,                    //   REPORT_ID (3)
     0x09, 0x03,                    //   USAGE (Vendor Usage 3)
     0x91, 0x82,                    //   OUTPUT (Data,Var,Abs,Vol)
+//to PC
+		0x85, 0x02,                    //   REPORT_ID (2)
+    0x09, 0x02,                    //   USAGE (Vendor Usage 2)
+    0x75, 0x08,                    //   REPORT_SIZE (8)
+    0x95, 0x1F,                    //   REPORT_COUNT (32)
+    0x81, 0x82,										 //		INPUT (Data,Var,Abs,Vol)
 
     0x85, 0x04,                    //   REPORT_ID (4)
     0x09, 0x04,                    //   USAGE (Vendor Usage 4)
-    0x15, 0x00,                    //   LOGICAL_MINIMUM (0)
-    0x25, 0x01,			              //   LOGICAL_MAXIMUM (255)
     0x75, 0x08,                    //   REPORT_SIZE (8)
-    0x95, 0x01,                    //   REPORT_COUNT (1)
-    0xB1, 0x82,                    //   FEATURE (Data,Var,Abs,Vol)
-    0x85, 0x04,                    //   REPORT_ID (4)
-    0x09, 0x04,                    //   USAGE (Vendor Usage 4)
-    0x91, 0x82,                    //   OUTPUT (Data,Var,Abs,Vol)
-*/
-		0x85, 0x03,                    //   REPORT_ID (3)
-    0x09, 0x03,                    //   USAGE (Vendor Usage 3)
-    0x75, 0x08,                    //   REPORT_SIZE (8)
-    0x95, 0x07,                    //   REPORT_COUNT (1)   0x04
+    0x95, 0x1F,                    //   REPORT_COUNT (32)
     0x81, 0x82,										 //		INPUT (Data,Var,Abs,Vol)
 
     0x85, 0x05,                    //   REPORT_ID (5)
     0x09, 0x05,                    //   USAGE (Vendor Usage 5)
     0x75, 0x08,                    //   REPORT_SIZE (8)
-    0x95, 0x07,                    //   REPORT_COUNT (1) 0x04
-    0x81, 0x82,										 //		INPUT (Data,Var,Abs,Vol)
-
-    0x85, 0x06,                    //   REPORT_ID (6)
-    0x09, 0x06,                    //   USAGE (Vendor Usage 6)
-    0x75, 0x08,                    //   REPORT_SIZE (8)
-    0x95, 0x07,                    //   REPORT_COUNT (1) 0x04
+    0x95, 0x1F,                    //   REPORT_COUNT (32) 0x04
     0x81, 0x82,                    //   INPUT (Data,Var,Abs,Vol) 
   /* USER CODE END 0 */ 
   0xC0    /*     END_COLLECTION	             */
@@ -231,16 +199,15 @@ static int8_t CUSTOM_HID_OutEvent_FS  (uint8_t event_idx, uint8_t state)
   /* USER CODE BEGIN 6 */ 
 	USBD_CUSTOM_HID_HandleTypeDef *hhid = 
 		(USBD_CUSTOM_HID_HandleTypeDef*)hUsbDeviceFS.pClassData;
-	for(uint8_t i=0; i<4; i++){
+	for(uint8_t i=0; i<2; i++){
 		dataToReceive[i]=hhid->Report_buf[i];
 	}
 	if(dataToReceive[0] == 1){
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, dataToReceive[1]);
-	}else if(dataToReceive[0] == 4){
+		//HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, dataToReceive[1]);
+		TIM3->CCR3 = dataToReceive[1]*65535;
+	}else if(dataToReceive[0] == 3){
 		TIM3->CCR4 = dataToReceive[1] * 257;
-	}/*else if(dataToReceive[0] == 2){
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, dataToReceive[1]);
-	}*/
+	}
   return (0);
   /* USER CODE END 6 */ 
 }

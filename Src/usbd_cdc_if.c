@@ -33,6 +33,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc_if.h"
 /* USER CODE BEGIN INCLUDE */
+#include "Handler.h"
 /* USER CODE END INCLUDE */
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
@@ -88,7 +89,9 @@ uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
 uint8_t UserTxBufferFS[APP_TX_DATA_SIZE];
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
-extern char str_rx[21];
+extern char uart_tx[BUF_SIZE];
+extern uint16_t countTx;
+extern uint8_t writePointerTx;
 /* USER CODE END PRIVATE_VARIABLES */
 
 /**
@@ -252,11 +255,16 @@ static int8_t CDC_Receive_FS (uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 6 */
   //USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
-  
-	strncpy(str_rx,(char*)Buf, *Len);
-	str_rx[*Len]=0;
+  uint8_t quant=*Len;
+
+	for(uint8_t i=0;i<quant;i++){
+		uart_tx[writePointerTx]=Buf[i];
+		writePointerTx=(writePointerTx+1)%BUF_SIZE;
+		countTx++;
+	}
 	
 	USBD_CDC_ReceivePacket(&hUsbDeviceFS);
+	
   return (USBD_OK);
   /* USER CODE END 6 */ 
 }

@@ -46,3 +46,4 @@
 .\compositehid_cdc\usbd_cdc_if.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h
 .\compositehid_cdc\usbd_cdc_if.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h
 .\compositehid_cdc\usbd_cdc_if.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h
+.\compositehid_cdc\usbd_cdc_if.o: ../Inc/Handler.h

@@ -599,6 +599,16 @@
               <FileType>1</FileType>
               <FilePath>..\Src\usbd_custom_hid_if.c</FilePath>
             </File>
+            <File>
+              <FileName>Handler.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Handler.c</FilePath>
+            </File>
+            <File>
+              <FileName>fifo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\fifo.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

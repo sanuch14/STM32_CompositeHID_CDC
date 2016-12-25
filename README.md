@@ -8,3 +8,5 @@ Because of PID is changed, You have to put "compositecdc.inf" file in to the
 directory, where standart STM32 COM port driver is installed.
 
 HID part of device work with standart windows driver.
+
+cdc uart hid 32 bytes
