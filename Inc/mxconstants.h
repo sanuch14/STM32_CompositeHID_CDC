@@ -36,7 +36,8 @@
   /* Includes ------------------------------------------------------------------*/
 
 /* USER CODE BEGIN Includes */
-
+#define SPI_CS_Pin GPIO_PIN_4
+#define SPI_CS_Port GPIOA
 /* USER CODE END Includes */
 
 /* Private define ------------------------------------------------------------*/

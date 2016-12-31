@@ -13,9 +13,13 @@
 #ifndef _USBD_CDC_HID_H_
 #define _USBD_CDC_HID_H_
 
+#include "usbd_desc.h"
+#include "usbd_ctlreq.h"
 #include  "usbd_ioreq.h"
 #include "usbd_customhid.h"
 #include "usbd_cdc.h"
+#include "usbd_cdc_if.h"
+#include "usbd_custom_hid_if.h"
 
 #define USB_CDC_HID_CONFIG_DESC_SIZ 	0x6B
 #define HID_INTERFACE 					0x00

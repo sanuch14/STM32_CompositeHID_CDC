@@ -1,5 +1,5 @@
 #include "Handler.h"
-extern uint16_t countRx;
+extern uint8_t countRx;
 extern uint8_t writePointerRx;
 
 void USER_UART_IRQHandler(UART_HandleTypeDef *huart){

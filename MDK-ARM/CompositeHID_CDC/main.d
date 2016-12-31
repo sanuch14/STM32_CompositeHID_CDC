@@ -45,11 +45,14 @@
 .\compositehid_cdc\main.o: E:\microcontroller\keil\ARM\ARMCC\Bin\..\include\string.h
 .\compositehid_cdc\main.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h
 .\compositehid_cdc\main.o: ../Inc/gpio.h
-.\compositehid_cdc\main.o: ../Middlewares/ST/STM32_USB_Device_Library/Class/CustomHID/Inc/usbd_customhid.h
+.\compositehid_cdc\main.o: ..\Middlewares\ST\STM32_USB_Device_Library\Class\Composite_CDC_CHID\Inc\usbd_cdc_hid.h
+.\compositehid_cdc\main.o: ../Inc/usbd_desc.h
+.\compositehid_cdc\main.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h
 .\compositehid_cdc\main.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h
 .\compositehid_cdc\main.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h
 .\compositehid_cdc\main.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h
-.\compositehid_cdc\main.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h
-.\compositehid_cdc\main.o: ../Inc/usbd_cdc_if.h
+.\compositehid_cdc\main.o: ../Middlewares/ST/STM32_USB_Device_Library/Class/CustomHID/Inc/usbd_customhid.h
 .\compositehid_cdc\main.o: ..\Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Inc\usbd_cdc.h
+.\compositehid_cdc\main.o: ../Inc/usbd_cdc_if.h
+.\compositehid_cdc\main.o: ../Inc/usbd_custom_hid_if.h
 .\compositehid_cdc\main.o: ../Inc/Handler.h

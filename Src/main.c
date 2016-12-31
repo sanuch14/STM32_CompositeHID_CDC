@@ -40,8 +40,7 @@
 
 /* USER CODE BEGIN Includes */
 /*For using CDC and CustomHID class functions*/
-#include "usbd_customhid.h"
-#include "usbd_cdc_if.h"
+#include "usbd_cdc_hid.h"
 #include <stdio.h>
 #include "Handler.h"
 /* USER CODE END Includes */
@@ -53,22 +52,31 @@
 //blink LEDs var
 uint8_t rxLed=0,txLed=0;
 
+uint8_t uartBusy = 0;
+
+char tmp[BUF_SIZE];
 /*USBHID functions and variables declaration*/
 extern USBD_HandleTypeDef hUsbDeviceFS;
-uint8_t dataToSend[32] = "xxxxxxxxx xxxxxxxxx xxxxxxxxx xx";
-uint8_t btnPressed = 0;
-uint8_t cnt = 0;
 
 /*CDC buffers declaration*/
 
 char uart_tx[BUF_SIZE];
-uint16_t countTx=0;
+uint8_t countTx=0;
 uint8_t writePointerTx=0, readPointerTx=0;
 
-
-char uart_rx[BUF_SIZE]="\0";
-uint16_t countRx=0;
+char uart_rx[BUF_SIZE];
+uint8_t countRx=0;
 uint8_t writePointerRx=0, readPointerRx=0;
+
+/*SPI buffers declaration*/
+
+char spi_tx[BUF_SIZE];
+uint8_t spiCountTx=0;
+uint8_t spiWritePointerTx=0, spiReadPointerTx=0;
+
+char spi_rx[BUF_SIZE];
+uint8_t spiCountRx=0;
+uint8_t spiWritePointerRx=0, spiReadPointerRx=0;
 
 /* USER CODE END PV */
 
@@ -87,6 +95,86 @@ void clearStr(char *buf){
 	for(i = 0; i<BUF_SIZE; i++){
 		buf[i]=0;
 	}
+}
+
+void blinkTX(){
+	txLed=5;
+	TIM3->CCR3=65535;
+}
+
+void blinkRX(){
+	rxLed=5;
+	TIM3->CCR4=65535;
+}
+///
+void cdcTransmit(uint8_t size){
+	blinkRX();
+	for(int i=0;i<size;i++){
+		tmp[i]=uart_rx[readPointerRx];
+		readPointerRx=(readPointerRx+1)%BUF_SIZE;
+		if(i==49){
+			CDC_Transmit_FS((uint8_t*)tmp, 50);
+			countRx-=50;
+			size-=50;
+			i=-1;
+		}
+	}
+	if(size!=0){
+		CDC_Transmit_FS((uint8_t*)tmp, size);
+		countRx-=size;
+	}
+}
+///
+
+void usbTransmit(uint8_t id, uint8_t* readPointer, char* buffer, uint8_t* counter, uint8_t size){
+	blinkRX();
+	tmp[0]=id;
+	for(int i=2;i<size+2;i++){//tmp[0] - id, tmp[1] - size, tmp[2...31] - data
+		tmp[i]=buffer[*readPointer];
+		*readPointer=(*readPointer+1)%BUF_SIZE;
+		if(i==31){
+			tmp[1]=30;
+			USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)tmp, 32);
+			*counter-=30;
+			size-=30;
+			i=1;
+		}
+	}
+	if(size!=0){
+		tmp[1]=size;
+		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)tmp, 32);
+		*counter-=size;
+	}
+}
+///
+void uartTransmit(uint8_t size){
+	blinkTX();
+	for(int i=0;i<size;i++){
+		tmp[i]=uart_tx[readPointerTx];
+		readPointerTx=(readPointerTx+1)%BUF_SIZE;
+		if(i==31){
+			HAL_UART_Transmit(&huart1, (uint8_t*)tmp, 32,0xFF);
+			countTx-=32;
+			size-=32;
+			i=-1;
+		}
+	}
+	if(size!=0){
+		countTx-=size;
+		HAL_UART_Transmit(&huart1, (uint8_t*)tmp, size,0xFF);
+	}
+}
+///SPI////
+void spiTransmit(uint8_t size){
+	blinkTX();
+	for(uint8_t i=0; i<size;i+=4){
+		HAL_SPI_TransmitReceive(&hspi1, (uint8_t*)&spi_tx[spiReadPointerTx],
+							(uint8_t*)&spi_rx[spiWritePointerRx], 4, 0xFF);
+		spiReadPointerTx=(spiReadPointerTx+4)%BUF_SIZE;
+		spiWritePointerRx=(spiWritePointerRx+4)%BUF_SIZE;
+	}
+	spiCountRx+=size;
+	spiCountTx-=size;
 }
 /* USER CODE END 0 */
 
@@ -108,17 +196,17 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_SPI1_Init();
+	MX_TIM3_Init();
   MX_TIM14_Init();
   MX_USART1_UART_Init();
   MX_USB_DEVICE_Init();
-  MX_TIM3_Init();
 
   /* USER CODE BEGIN 2 */
 	HAL_TIM_Base_Start_IT(&htim14);
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
 	
-	HAL_UART_Receive_IT(&huart1, (uint8_t*)uart_rx, BUF_SIZE);
+	HAL_UART_Receive_IT(&huart1, (uint8_t*)uart_rx, BUF_SIZE);	
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -135,65 +223,30 @@ int main(void)
 			if(txLed==0)
 				TIM3->CCR3 = 0;
 		}
-		char tmp[BUF_SIZE]="\0";
-		uint16_t cn = countRx;
+		//send received data to uart
+		uint8_t cn = countTx;
 		if(cn>0){
-			rxLed=5;
-			TIM3->CCR4=65535;
-			for(int i=0;i<cn;i++){
-				tmp[i]=uart_rx[readPointerRx];
-				readPointerRx=(readPointerRx+1)%BUF_SIZE;
-				if(i==49){
-					CDC_Transmit_FS((uint8_t*)tmp, 50);
-					countRx-=50;
-					cn-=50;
-					//clearStr(tmp);
-					i=-1;
-				}
-			}
-			if(cn!=0){
-				CDC_Transmit_FS((uint8_t*)tmp, cn);
-				countRx-=cn;
-				//clearStr(tmp);
+			uartTransmit(cn);
+		}
+		//receive data from uart
+		cn = countRx;
+		if(cn>0){
+			if(uartBusy){
+				usbTransmit(USB_UART_RX, &readPointerRx, uart_rx, &countRx, cn);
+			}else{
+				cdcTransmit(cn);//use cdc for data from uart
 			}
 		}
-		
-		/*CDC send received buffer to UART.*/
-		cn = countTx;
-		if(cn>0){
-			txLed=5;
-			TIM3->CCR3=65535;
-//			sprintf(tmp,"\ncountTX = %d\n",countTx);
-//			CDC_Transmit_FS((uint8_t*)tmp,strlen(tmp));
-			for(int i=0;i<cn;i++){
-				tmp[i]=uart_tx[readPointerTx];
-				readPointerTx=(readPointerTx+1)%BUF_SIZE;
-				if(i==31){
-					HAL_UART_Transmit(&huart1, (uint8_t*)tmp, 32,0xFF);
-					countTx-=32;
-					cn-=32;
-					//clearStr(tmp);
-					i=-1;
-				}
-			}
-			if(cn!=0){
-				countTx-=cn;
-				HAL_UART_Transmit(&huart1, (uint8_t*)tmp, cn,0xFF);
-				//clearStr(tmp);
-			}
+		////SPI////
+		cn=spiCountTx;
+		if(cn>=4){
+			uint8_t size = cn-(cn%4);
+			spiTransmit(size);
+			usbTransmit(USB_SPI_RX, &spiReadPointerRx, spi_rx, &spiCountRx, size);
 		}
 		
-		/*Custom HID. Example for my test board.(When button is pressed, LED on PC is on). 
-		* USBD HID Demonstrator is used on PC
-		**/
-		uint8_t btn = (uint8_t)HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_8);
-			if(btnPressed != btn){
-				dataToSend[0] = 2;
-				dataToSend[1] = btn;
-				btnPressed = btn;
-				USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, dataToSend, 32);
-			}
-			HAL_Delay(1);
+		
+		HAL_Delay(1);
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
@@ -227,7 +280,8 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_PCLK1;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+	//////////////////////////////////////////////////////
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
   {
     Error_Handler();
@@ -252,30 +306,30 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim6){
 	/*Switch LEDs on PC side*/
-	if(cnt == 0){
-		dataToSend[0] = 4;
-		dataToSend[1] = 1;
-	}else if(cnt == 1){
-		dataToSend[0] = 4;
-		dataToSend[1] = 0;
-	}else if(cnt == 2){
-		dataToSend[0] = 5;
-		dataToSend[1] = 1;
-	}else if(cnt == 3){
-		dataToSend[0] = 5;
-		dataToSend[1] = 0;
-	}
-	/*Send messade*/
-	dataToSend[2] = 'H';
-	dataToSend[3] = 'I';
-	dataToSend[4] = 'D';
-	dataToSend[5] = 'U';
-	dataToSend[6] = 'S';
-	dataToSend[7] = 'B';
-	USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, dataToSend, 32);
-	cnt++;
-	if (cnt>3)
-		cnt=0;
+//	if(cnt == 0){
+//		dataToSend[0] = 4;
+//		dataToSend[1] = 1;
+//	}else if(cnt == 1){
+//		dataToSend[0] = 4;
+//		dataToSend[1] = 0;
+//	}else if(cnt == 2){
+//		dataToSend[0] = 5;
+//		dataToSend[1] = 1;
+//	}else if(cnt == 3){
+//		dataToSend[0] = 5;
+//		dataToSend[1] = 0;
+//	}
+//	/*Send messade*/
+//	dataToSend[2] = 'H';
+//	dataToSend[3] = 'I';
+//	dataToSend[4] = 'D';
+//	dataToSend[5] = 'U';
+//	dataToSend[6] = 'S';
+//	dataToSend[7] = 'B';
+//	USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, dataToSend, 32);
+//	cnt++;
+//	if (cnt>3)
+//		cnt=0;
 }
 /* USER CODE END 4 */
 

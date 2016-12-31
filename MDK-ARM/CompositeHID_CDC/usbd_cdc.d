@@ -48,3 +48,5 @@
 .\compositehid_cdc\usbd_cdc.o: ../Inc/usbd_desc.h
 .\compositehid_cdc\usbd_cdc.o: ..\Middlewares\ST\STM32_USB_Device_Library\Class\Composite_CDC_CHID\Inc\usbd_cdc_hid.h
 .\compositehid_cdc\usbd_cdc.o: ../Middlewares/ST/STM32_USB_Device_Library/Class/CustomHID/Inc/usbd_customhid.h
+.\compositehid_cdc\usbd_cdc.o: ../Inc/usbd_cdc_if.h
+.\compositehid_cdc\usbd_cdc.o: ../Inc/usbd_custom_hid_if.h

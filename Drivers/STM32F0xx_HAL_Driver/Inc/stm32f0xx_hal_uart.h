@@ -233,8 +233,6 @@ typedef struct
 
   uint8_t                  *pRxBuffPtr;      /*!< Pointer to UART Rx transfer Buffer */
 	
-	//FIFOBUF 								 *pRxBuffPtr;
-
   uint16_t                 RxXferSize;       /*!< UART Rx Transfer size              */
 
   uint16_t                 RxXferCount;      /*!< UART Rx Transfer Counter           */
@@ -1184,17 +1182,13 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *huart);
 /** @addtogroup UART_Exported_Functions_Group2 IO operation functions
   * @{
   */
-//void setFIFO(uint8_t *putInd, uint8_t *getInd, uint8_t *isEmp, uint8_t *siz, char *Buf);
 /* IO operation functions *****************************************************/
 HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout);
 HAL_StatusTypeDef HAL_UART_Receive(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout);
-//HAL_StatusTypeDef HAL_UART_Receive(UART_HandleTypeDef *huart, FIFOBUF *pData, uint16_t Size, uint32_t Timeout);
 HAL_StatusTypeDef HAL_UART_Transmit_IT(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size);
 HAL_StatusTypeDef HAL_UART_Receive_IT(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size);
-//HAL_StatusTypeDef HAL_UART_Receive_IT(UART_HandleTypeDef *huart, FIFOBUF *pData, uint16_t Size);
 HAL_StatusTypeDef HAL_UART_Transmit_DMA(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size);
 HAL_StatusTypeDef HAL_UART_Receive_DMA(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size);
-//HAL_StatusTypeDef HAL_UART_Receive_DMA(UART_HandleTypeDef *huart, FIFOBUF *pData, uint16_t Size);
 HAL_StatusTypeDef HAL_UART_DMAPause(UART_HandleTypeDef *huart);
 HAL_StatusTypeDef HAL_UART_DMAResume(UART_HandleTypeDef *huart);
 HAL_StatusTypeDef HAL_UART_DMAStop(UART_HandleTypeDef *huart);

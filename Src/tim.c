@@ -99,7 +99,7 @@ void MX_TIM14_Init(void)
 {
 
   htim14.Instance = TIM14;
-  htim14.Init.Prescaler = 47999;
+  htim14.Init.Prescaler = 23999;
   htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim14.Init.Period = 499;
   htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;

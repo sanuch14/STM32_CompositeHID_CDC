@@ -16,13 +16,6 @@
   
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc_hid.h"
-#include "usbd_desc.h"
-#include "usbd_ctlreq.h"
-#include "usbd_cdc.h"
-#include "usbd_cdc_if.h"
-#include "usbd_customhid.h"
-#include "usbd_custom_hid_if.h"
-
 
 
 /**

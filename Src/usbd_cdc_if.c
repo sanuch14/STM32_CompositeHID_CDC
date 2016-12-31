@@ -90,7 +90,7 @@ uint8_t UserTxBufferFS[APP_TX_DATA_SIZE];
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
 extern char uart_tx[BUF_SIZE];
-extern uint16_t countTx;
+extern uint8_t countTx;
 extern uint8_t writePointerTx;
 /* USER CODE END PRIVATE_VARIABLES */
 

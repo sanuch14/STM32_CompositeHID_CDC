@@ -604,11 +604,6 @@
               <FileType>1</FileType>
               <FilePath>..\Src\Handler.c</FilePath>
             </File>
-            <File>
-              <FileName>fifo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\fifo.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>

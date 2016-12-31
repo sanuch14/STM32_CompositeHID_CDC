@@ -56,6 +56,20 @@
   * @{
   */ 
 /* USER CODE BEGIN EXPORTED_DEFINES */
+#define cs_set()  HAL_GPIO_WritePin(SPI_CS_Port, SPI_CS_Pin, GPIO_PIN_RESET)
+#define cs_reset()  HAL_GPIO_WritePin(SPI_CS_Port, SPI_CS_Pin, GPIO_PIN_SET)
+
+#define USB_SETTINGS			1
+#define USB_ANSWER				2
+#define USB_UART_TX				3
+#define USB_UART_RX				4
+#define USB_SPI_TX				5
+#define USB_SPI_RX				6
+
+#define UART_BUSY_RESET		0
+#define UART_BUSY_SET			1
+#define CS_SET						2
+#define CS_RESET					3
 /* USER CODE END EXPORTED_DEFINES */
 
 /**

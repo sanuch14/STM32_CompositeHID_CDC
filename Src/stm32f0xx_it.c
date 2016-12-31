@@ -37,6 +37,9 @@
 
 /* USER CODE BEGIN 0 */
 #include "Handler.h"
+
+extern uint8_t spiCountTx, spiCountRx, spiReadPointerTx, spiReadPointerRx;
+extern char spi_rx[BUF_SIZE], spi_tx[BUF_SIZE];
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -161,7 +164,7 @@ void TIM14_IRQHandler(void)
 void SPI1_IRQHandler(void)
 {
   /* USER CODE BEGIN SPI1_IRQn 0 */
-
+	
   /* USER CODE END SPI1_IRQn 0 */
   HAL_SPI_IRQHandler(&hspi1);
   /* USER CODE BEGIN SPI1_IRQn 1 */
